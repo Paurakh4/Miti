@@ -1,10 +1,20 @@
-# Miti — The Nepali Calendar
+# Miti — The Nepali Calendar (Fork)
+
+> This is a personal fork of [PoskOfficial/Miti](https://github.com/PoskOfficial/Miti) maintained by [@Paurakh4](https://github.com/Paurakh4). It tracks the upstream project while exploring UI refinements and experiments. The original app lives at [miti.bikram.io](https://miti.bikram.io).
 
 A clean, minimal Nepali calendar that lives wherever you do — web, mobile, browser, and even Raycast — with first-class Google Calendar sync. Schedule by Bikram Sambat, view in Gregorian, and stop converting dates in your head.
 
-> Live at [miti.bikram.io](https://miti.bikram.io)
-
 ![banner](apps/vite/public/banner.png)
+
+## About this fork
+
+This fork is for hands-on work and experimentation on top of the upstream project. Notable changes in this fork at the moment:
+
+- A redesigned, keyboard-inspired UI for the web app: neutral palette, tactile keycap surfaces, prominent focus rings, mono-spaced metadata, and tighter spacing
+- Lighter modal / sheet overlays with snappier open/close animations
+- Extended BS year range so the calendar stays usable beyond 2082
+
+If you're looking for the production app, use the upstream [PoskOfficial/Miti](https://github.com/PoskOfficial/Miti) and [miti.bikram.io](https://miti.bikram.io). PRs that make sense upstream will be sent there.
 
 ## Why Miti
 
@@ -52,7 +62,7 @@ Shared code lives in `packages/`:
 Requirements: [Bun](https://bun.sh) (≥ 1.1) and Node 18+.
 
 ```bash
-git clone https://github.com/PoskOfficial/Miti.git
+git clone https://github.com/Paurakh4/Miti.git
 cd Miti
 bun install
 ```
@@ -124,24 +134,26 @@ Miti/
 
 ## Privacy & Google API use
 
-Miti uses Google OAuth strictly to authenticate you and to read/write your Google Calendar events on your behalf. We do not sell, share, or use your data for advertising or analytics targeting. Miti's use of information received from Google APIs adheres to the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes), including the Limited Use requirements.
+Miti uses Google OAuth strictly to authenticate you and to read/write your Google Calendar events on your behalf. It does not sell, share, or use your data for advertising or analytics targeting. Miti's use of information received from Google APIs adheres to the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes), including the Limited Use requirements.
 
 See the in-app [Privacy Policy](https://miti.bikram.io/privacy) and [Google API Disclosure](https://miti.bikram.io/google-api-disclosure) for details.
 
 ## Contributing
 
-Miti is open source and volunteer-driven. Issues, ideas, and PRs are very welcome.
+Issues and PRs against this fork are welcome for fork-specific changes. For changes that should land in the production app, please open them against the upstream repository at [github.com/PoskOfficial/Miti](https://github.com/PoskOfficial/Miti).
 
-1. Fork the repo and create a feature branch
+1. Fork (or branch from) this repo
 2. `bun install` and run the relevant app
 3. Keep changes focused and match the existing code style
 4. Open a PR with a clear summary of what changed and why
 
-For larger features, please open an issue first to discuss the direction.
+## Maintainer of this fork
 
-## Credits
+- [Paurakh](https://github.com/Paurakh4) — fork maintainer
 
-Built and maintained by [Bikram Parajuli](https://github.com/ParajuliBkrm) on behalf of the Miti team, with contributions from:
+## Credits (upstream)
+
+Built and maintained upstream by [Bikram Parajuli](https://github.com/ParajuliBkrm) on behalf of the Miti team, with contributions from:
 
 - [@nirajacharyaa](https://github.com/nirajacharyaa)
 - [@headshigh](https://github.com/headshigh)
@@ -154,10 +166,11 @@ Built and maintained by [Bikram Parajuli](https://github.com/ParajuliBkrm) on be
 
 ## Contact
 
-- Email: [calendar@bikram.io](mailto:calendar@bikram.io)
-- Discord: [dsc.gg/posk](https://dsc.gg/posk)
-- Issues & feature requests: [github.com/PoskOfficial/Miti](https://github.com/PoskOfficial/Miti)
+- Upstream project: [github.com/PoskOfficial/Miti](https://github.com/PoskOfficial/Miti)
+- Upstream email: [calendar@bikram.io](mailto:calendar@bikram.io)
+- Upstream Discord: [dsc.gg/posk](https://dsc.gg/posk)
+- This fork: [github.com/Paurakh4/Miti](https://github.com/Paurakh4/Miti)
 
 ## License
 
-Open source. See the repository for license details.
+Open source, inherited from the upstream project. See the upstream repository for license details.
