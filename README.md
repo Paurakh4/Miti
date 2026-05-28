@@ -4,7 +4,7 @@
 
 A clean, minimal Nepali calendar that lives wherever you do — web, mobile, browser, and even Raycast — with first-class Google Calendar sync. Schedule by Bikram Sambat, view in Gregorian, and stop converting dates in your head.
 
-![banner](apps/vite/public/banner.png)
+![Miti — Nepali Calendar](readme-image.png)
 
 ## About this fork
 
