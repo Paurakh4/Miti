@@ -1,29 +1,49 @@
-import { Link } from "react-router-dom";
-import Octocat from "./Octocat";
+import { Link } from "react-router-dom"
+import Octocat from "./Octocat"
 
 const Footer = () => {
   return (
-    <footer className="mt-10 border-t px-2 py-2 text-center dark:border-gray-700 dark:bg-gray-900 sm:px-6 lg:px-8 ">
-      <div className="container mx-auto flex items-center justify-between text-black dark:text-white">
-        <div className="flex items-center gap-2">
-          <a href="https://github.com/PoskOfficial/Nepali-calendar-web">
-            <Octocat className="h-5 w-5 fill-current text-black dark:text-white" />
+    <footer className="mt-16 border-t border-border bg-background">
+      <div className="max-w-7xl mx-auto flex flex-col gap-3 px-4 py-5 md:px-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-3">
+          <a
+            href="https://github.com/PoskOfficial/Nepali-calendar-web"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            aria-label="GitHub"
+          >
+            <Octocat className="h-4 w-4 fill-current" />
           </a>
-          <h1 className="hidden lg:block">Miti - The Nepali Calendar</h1>
+          <span className="text-sm font-medium text-foreground">
+            Miti
+          </span>
+          <span className="text-sm text-muted-foreground hidden sm:inline">
+            The Nepali Calendar
+          </span>
         </div>
-        <div>
-          <ul className="flex gap-2 text-xs text-gray-700 dark:text-gray-400 lg:gap-4">
-            <li>
-              <Link to="/privacy">Privacy Policy</Link>
-            </li>
-            <li>
-              <Link to="/google-api-disclosure">Google Api Disclosure</Link>
-            </li>
-          </ul>
-        </div>
+        <ul className="flex items-center gap-1 text-xs text-muted-foreground">
+          <li>
+            <Link
+              to="/privacy"
+              className="px-2 py-1 rounded-md hover:bg-accent hover:text-foreground transition-colors"
+            >
+              Privacy Policy
+            </Link>
+          </li>
+          <li aria-hidden className="text-border">
+            ·
+          </li>
+          <li>
+            <Link
+              to="/google-api-disclosure"
+              className="px-2 py-1 rounded-md hover:bg-accent hover:text-foreground transition-colors"
+            >
+              Google API Disclosure
+            </Link>
+          </li>
+        </ul>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

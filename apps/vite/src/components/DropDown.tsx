@@ -1,6 +1,7 @@
 import { Dispatch, Fragment } from "react"
 import { Listbox, Transition } from "@headlessui/react"
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid"
+import { cn } from "@/lib/utils"
 
 interface DropDownProps {
   selected: string | number
@@ -27,14 +28,22 @@ const DropDown = ({
   return (
     <div className={className}>
       <Listbox value={selected} onChange={(value) => setSelected(value)}>
-        <div className="relative mt-1">
-          <Listbox.Button className="w-28 relative cursor-default rounded-md bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 dark:bg-gray-800 dark:text-white sm:text-sm">
-            <span className="block truncate text-xs">
+        <div className="relative">
+          <Listbox.Button
+            className={cn(
+              "relative w-full cursor-pointer rounded-md border border-input bg-card py-2 pl-3 pr-9 text-left text-sm",
+              "shadow-[inset_0_1px_0_0_hsl(0_0%_0%/0.02)]",
+              "transition-colors duration-150",
+              "hover:border-foreground/30",
+              "focus:outline-none"
+            )}
+          >
+            <span className="block truncate text-foreground">
               {selectedValue?.label}
             </span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronUpDownIcon
-                className="h-5 w-5 text-gray-400"
+                className="h-4 w-4 text-muted-foreground"
                 aria-hidden="true"
               />
             </span>
@@ -45,31 +54,36 @@ const DropDown = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="scrollbar-hide absolute z-50 mt-1 max-h-60 w-auto overflow-auto rounded-md border bg-white py-1 text-xs shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:border-gray-600 dark:bg-gray-800 sm:text-sm">
+            <Listbox.Options className="scrollbar-hide absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-border bg-popover py-1 text-sm text-popover-foreground shadow-md focus:outline-none">
               {formattedItems?.map((item, idx) => (
                 <Listbox.Option
                   key={idx}
                   className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-8 pr-4 ${
+                    cn(
+                      "relative cursor-pointer select-none py-1.5 pl-7 pr-3 transition-colors",
                       active
-                        ? "bg-amber-100 text-amber-900"
-                        : "text-gray-900 dark:text-white"
-                    }`
+                        ? "bg-accent text-accent-foreground"
+                        : "text-foreground"
+                    )
                   }
                   value={item.value}
                 >
                   {({ selected }) => (
                     <>
                       <span
-                        className={`block truncate ${
+                        className={cn(
+                          "block truncate",
                           selected ? "font-medium" : "font-normal"
-                        }`}
+                        )}
                       >
                         {item.label}
                       </span>
                       {selected ? (
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                          <CheckIcon className="h-4 w-4" aria-hidden="true" />
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-foreground">
+                          <CheckIcon
+                            className="h-3.5 w-3.5"
+                            aria-hidden="true"
+                          />
                         </span>
                       ) : null}
                     </>

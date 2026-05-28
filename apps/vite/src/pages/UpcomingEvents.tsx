@@ -1,15 +1,19 @@
 import NepaliDate from "nepali-datetime"
 import { NewCalendarData } from "@miti/types"
 import { useParams, useSearchParams, useNavigate } from "react-router-dom"
-import { useEffect, useMemo, useState, useTransition } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useCalendarData } from "@miti/query/calendar"
 import { Event } from "@/components/calendar/EventList"
-import { Calendar, Calendar1, Clock } from "lucide-react"
+import { CalendarOff } from "lucide-react"
 import YearMonthPicker from "@/components/YearMonthPicker"
 import { nepaliMonths } from "@/constants/mahina"
 import { relativeTimeFromDates } from "@/helper/dates"
 import useLanguage from "@/helper/useLanguage"
 import { useTranslation } from "react-i18next"
+import { Switch } from "@/components/ui/switch"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+
 function UpcomingEvents() {
   const { BSYear, BSMonth } = useParams()
   const [searchParams] = useSearchParams()
@@ -21,7 +25,7 @@ function UpcomingEvents() {
     if (!BSYear || !BSMonth) return new NepaliDate()
     const year = parseInt(BSYear)
     const month = parseInt(BSMonth)
-    const isValid = year >= 2075 && year <= 2082 && month >= 1 && month <= 12
+    const isValid = year >= 2075 && year <= 2085 && month >= 1 && month <= 12
 
     if (isValid) return new NepaliDate(year, month - 1, 1)
     return new NepaliDate()
@@ -38,11 +42,11 @@ function UpcomingEvents() {
     history.replaceState(null, "", url)
   }, [currentNepaliDate, onlyHolidays])
 
-  const toggleHolidayFilter = () => {
+  const toggleHolidayFilter = (checked: boolean) => {
     const baseUrl = `/events/${currentNepaliDate.getYear()}/${
       currentNepaliDate.getMonth() + 1
     }`
-    if (onlyHolidays) {
+    if (!checked) {
       navigate(baseUrl)
     } else {
       navigate(`${baseUrl}?onlyHolidays=true`)
@@ -91,65 +95,70 @@ function UpcomingEvents() {
   }, [currentNepaliDate])
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 mt-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 pb-6 border-b border-border md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 className="text-2xl font-bold mb-2 dark:text-white">
+          <p className="text-xs font-mono uppercase tracking-tight text-muted-foreground mb-1">
+            {onlyHolidays ? t("navbar.Holidays") : t("navbar.Events")}
+          </p>
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
             {onlyHolidays
               ? t("navbar.Upcoming_Holidays")
               : t("navbar.Upcoming_Events")}
-            <span className="text-xl font-medium text-gray-600 dark:text-gray-300 ml-2">
-              - {currentMonthName?.np} {currentNepaliDate.getYear()}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {currentMonthName?.np}{" "}
+            <span className="font-mono tabular-nums">
+              {currentNepaliDate.getYear()}
             </span>
-          </h2>
-          <div className="h-1 w-24 bg-indigo-600 rounded"></div>
+          </p>
         </div>
 
         <YearMonthPicker
-          className="w-full md:w-96"
+          className="w-full md:w-auto"
           currentNepaliDate={currentNepaliDate}
           setCurrentNepaliDate={setCurrentNepaliDate}
         />
+      </div>
 
-        <div className="mt-4 md:mt-0">
-          <label className="inline-flex items-center cursor-pointer">
-            <span className="mr-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t("navbar.All_Events")}
-            </span>
-            <div className="relative">
-              <input
-                type="checkbox"
-                checked={onlyHolidays}
-                onChange={toggleHolidayFilter}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
-            </div>
-            <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t("navbar.Holidays_only")}
-              {holidayCount > 0 && (
-                <span className="text-xs bg-red-100 text-red-800 ml-1 px-2 py-0.5 rounded-full">
-                  {holidayCount}
-                </span>
-              )}
-            </span>
+      {/* Filter row */}
+      <div className="flex items-center justify-between py-4 border-b border-border">
+        <div className="flex items-center gap-3">
+          <Switch
+            id="holidays-filter"
+            checked={onlyHolidays}
+            onCheckedChange={toggleHolidayFilter}
+          />
+          <label
+            htmlFor="holidays-filter"
+            className="flex items-center gap-2 text-sm font-medium text-foreground cursor-pointer"
+          >
+            {t("navbar.Holidays_only")}
+            {holidayCount > 0 && (
+              <Badge variant="secondary" className="font-mono tabular-nums">
+                {holidayCount}
+              </Badge>
+            )}
           </label>
         </div>
+        <span className="text-xs text-muted-foreground font-mono">
+          {filteredEvents.length} result
+          {filteredEvents.length !== 1 ? "s" : ""}
+        </span>
       </div>
 
       {filteredEvents.length === 0 ? (
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center shadow-sm">
-          <div className="text-gray-500 dark:text-gray-400 mb-3">
-            <Calendar className="mx-auto h-16 w-16 text-gray-400 dark:text-gray-500" />
-          </div>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+        <div className="flex flex-col items-center justify-center gap-3 mt-12 rounded-md border border-dashed border-border bg-card px-4 py-16">
+          <CalendarOff className="h-8 w-8 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
             {onlyHolidays
               ? "यस महिनामा कुनै बिदाहरू छैनन्।"
               : "यस महिनामा कुनै कार्यक्रमहरू छैनन्।"}
           </p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 mt-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredEvents.map((event, index) => (
             <EventCard key={index} event={event} />
           ))}
@@ -161,46 +170,57 @@ function UpcomingEvents() {
 
 function EventCard({ event }: { event: Event }) {
   const { isNepaliLanguage } = useLanguage()
-  console.log({ isNepaliLanguage })
   return (
     <div
-      className={`rounded-lg border shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md`}
+      className={cn(
+        "group flex items-start gap-3 rounded-lg border border-border bg-card p-3",
+        "transition-colors duration-150 hover:border-foreground/30 hover:bg-accent/40"
+      )}
     >
-      <div className="p-5 bg-white dark:bg-gray-800">
-        <div className="flex items-start gap-4">
-          <div
-            className={`flex-shrink-0 flex items-center flex-col justify-center rounded-md size-14 ${
-              event.isHoliday
-                ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200"
-                : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
-            }`}
-          >
-            <span className="text-xl font-bold">{event.date}</span>
-            <span className="text-xs font-bold">{event.day}</span>
-          </div>
-          <div className="flex-grow">
-            <h3
-              className={`font-semibold text-sm md:text-base mb-1 ${
-                event.isHoliday
-                  ? "text-red-700 dark:text-red-400"
-                  : "text-gray-900 dark:text-gray-100"
-              }`}
-            >
-              {event.title}
-            </h3>
-            <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 gap-1">
-              <Calendar1 className="h-4 w-4" />
-              <span>{event.fullDate}</span>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                ({event.enDate})
-              </div>
-            </div>
-          </div>
-          <span className="inline-flex text-nowrap items-center rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 text-xs font-medium">
-            {relativeTimeFromDates(new Date(event.enDate), isNepaliLanguage)}
-          </span>
-        </div>
+      <div
+        className={cn(
+          "kbd-surface flex h-14 w-14 flex-shrink-0 flex-col items-center justify-center rounded-md",
+          event.isHoliday && "bg-destructive/10 border-destructive/30"
+        )}
+      >
+        <span
+          className={cn(
+            "text-lg font-semibold leading-none tabular-nums",
+            event.isHoliday ? "text-destructive" : "text-foreground"
+          )}
+        >
+          {event.date}
+        </span>
+        <span
+          className={cn(
+            "text-[9px] mt-1 uppercase tracking-tight font-mono leading-none",
+            event.isHoliday ? "text-destructive/80" : "text-muted-foreground"
+          )}
+        >
+          {event.day}
+        </span>
       </div>
+
+      <div className="min-w-0 flex-1">
+        <h3
+          className={cn(
+            "text-sm font-medium tracking-tight leading-snug",
+            event.isHoliday ? "text-destructive" : "text-foreground"
+          )}
+        >
+          {event.title}
+        </h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {event.fullDate}
+        </p>
+        <p className="text-[11px] text-muted-foreground/80 font-mono">
+          {event.enDate}
+        </p>
+      </div>
+
+      <span className="kbd-surface flex-shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-tight text-muted-foreground">
+        {relativeTimeFromDates(new Date(event.enDate), isNepaliLanguage)}
+      </span>
     </div>
   )
 }

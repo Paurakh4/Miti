@@ -8,6 +8,7 @@ import { type ChangeEvent, useState } from "react"
 import useLanguage from "../helper/useLanguage"
 
 import { format } from "date-fns"
+
 const DateConverter = () => {
   const [date, setDate] = useState(new Date())
   const nepaliDate = new NepaliDate(date)
@@ -21,56 +22,65 @@ const DateConverter = () => {
 
     const inputDate = new Date(inputValue)
 
-    // change state if the current date exceeds the maxDate or falls before the minDate.
     if (inputDate > new Date(minDate) && inputDate < new Date(maxDate)) {
       setDate(inputDate)
     }
   }
 
   return (
-    <>
-      <div className="mx-auto mt-10 flex max-w-3xl flex-col items-center pb-20 text-center font-mukta lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9">
-        <div className=" font-mukta text-2xl font-semibold dark:text-white">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="text-center mb-8">
+        <p className="text-xs font-mono uppercase tracking-tight text-muted-foreground mb-1">
+          Tool
+        </p>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
           {t("dc.Date_Converter")}
-        </div>
-        <div className="mt-5 w-4/5 sm:w-full">
-          <div className="flex flex-col  items-center justify-around  pb-5 sm:flex-row sm:items-center">
-            <div className="flex flex-row items-center gap-2 sm:flex-col">
-              <div className="font-mukta font-semibold">
-                {" "}
-                <span className="hidden dark:text-white sm:inline-block">
-                  {t("dc.B.S")}
-                </span>
-              </div>
-              <NepaliDatePicker date={date} setDate={setDate} />
-            </div>
-            <div className="flex w-36  flex-row items-center  justify-center ">
+        </h1>
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-6 md:p-8">
+        <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-end sm:justify-between">
+          {/* BS */}
+          <div className="flex-1">
+            <label className="block text-xs font-mono uppercase tracking-tight text-muted-foreground mb-2">
+              {t("dc.B.S")} · Nepali
+            </label>
+            <NepaliDatePicker date={date} setDate={setDate} />
+          </div>
+
+          {/* Divider/swap */}
+          <div className="flex items-center justify-center sm:px-2 sm:pb-2">
+            <div className="kbd-surface flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground">
               <ArrowsRightLeftIcon
-                className="h-8 w-8 rotate-90 dark:text-white sm:rotate-0"
+                className="h-4 w-4 rotate-90 sm:rotate-0"
                 aria-hidden="true"
               />
             </div>
-            <div className="flex flex-row items-center gap-2 sm:flex-col">
-              <div className="font-mukta font-semibold">
-                {" "}
-                <span className="hidden dark:text-white sm:inline-block">
-                  {" "}
-                  {t("dc.A.D")}
-                </span>
-              </div>
-              <input
-                type="date"
-                value={format(date, "yyyy-MM-dd")}
-                onChange={handleChange}
-                className="cursor-pointer appearance-none rounded-md border px-20 py-3 text-sm shadow-sm outline-none dark:bg-gray-800 dark:text-white  sm:px-10 "
-                max={maxDate}
-                min={minDate}
-              />
-            </div>
+          </div>
+
+          {/* AD */}
+          <div className="flex-1">
+            <label
+              htmlFor="ad-date"
+              className="block text-xs font-mono uppercase tracking-tight text-muted-foreground mb-2"
+            >
+              {t("dc.A.D")} · Gregorian
+            </label>
+            <input
+              id="ad-date"
+              type="date"
+              value={format(date, "yyyy-MM-dd")}
+              onChange={handleChange}
+              className="w-full appearance-none rounded-md border border-input bg-card px-3 py-2 text-sm font-mono tabular-nums text-foreground shadow-[inset_0_1px_0_0_hsl(0_0%_0%/0.02)] transition-colors duration-150 hover:border-foreground/30 focus-visible:outline-none"
+              max={maxDate}
+              min={minDate}
+            />
           </div>
         </div>
-        <div className="mt-10">
-          <p className="text-xl dark:text-white ">
+
+        {/* Result */}
+        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          <ResultCard label="नेपाली · Nepali">
             {`${nepaliNumber(`${nepaliDate.getYear()}`)} ${
               nepaliMonths[nepaliDate.getMonth()]
             } ${nepaliNumber(
@@ -78,18 +88,35 @@ const DateConverter = () => {
                 .getDateObject()
                 .toLocaleString("ne-NP", { weekday: "long" })}`
             )}`}
-          </p>
-          <p className="font-mukta text-2xl font-semibold dark:text-white">
+          </ResultCard>
+          <ResultCard label="Gregorian">
             {`${date.toLocaleString("default", {
               weekday: "long",
             })} ${date.getDate()}, ${date.toLocaleString("default", {
               month: "long",
             })} ${date.getFullYear()}`}
-          </p>
+          </ResultCard>
         </div>
       </div>
-    </>
+    </div>
   )
 }
+
+const ResultCard = ({
+  label,
+  children,
+}: {
+  label: string
+  children: React.ReactNode
+}) => (
+  <div className="rounded-md border border-border bg-background p-4">
+    <p className="text-[10px] font-mono uppercase tracking-tight text-muted-foreground mb-2">
+      {label}
+    </p>
+    <p className="text-base font-medium tracking-tight text-foreground">
+      {children}
+    </p>
+  </div>
+)
 
 export default DateConverter

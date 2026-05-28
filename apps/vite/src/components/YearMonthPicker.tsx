@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
 
 const YearMonthPicker = ({
   currentNepaliDate,
@@ -50,92 +49,77 @@ const YearMonthPicker = ({
     currentYear === availableYears[availableYears.length - 1]?.en
 
   return (
-    <div className={cn("", className)}>
-      <div className={cn("flex items-center justify-between p-2")}>
-        <Button
-          variant="outline"
-          size="icon"
-          disabled={isPrevDisabled}
-          className={cn(
-            "flex items-center justify-center flex-shrink-0 disabled:cursor-not-allowed rounded-lg transition-all duration-200",
-            isPrevDisabled
-              ? "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500"
-              : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50"
-          )}
-          onClick={handlePrevMonth}
-          aria-label="Previous month"
+    <div className={cn("flex items-center gap-2", className)}>
+      <Button
+        variant="outline"
+        size="icon-sm"
+        disabled={isPrevDisabled}
+        onClick={handlePrevMonth}
+        aria-label="Previous month"
+      >
+        <ChevronLeftIcon className="h-4 w-4" aria-hidden="true" />
+      </Button>
+
+      <div className="flex flex-1 md:flex-none items-center gap-2">
+        <Select
+          value={currentMonth.toString()}
+          onValueChange={(value) => {
+            setCurrentNepaliDate(
+              new NepaliDate(currentYear, parseInt(value), 1)
+            )
+          }}
         >
-          <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-        </Button>
+          <SelectTrigger className="h-8 min-w-[120px] w-full md:w-auto font-medium tracking-tight">
+            <SelectValue placeholder="Month" className="select-none" />
+          </SelectTrigger>
+          <SelectContent className="max-h-72">
+            {nepaliMonths.map((month, index) => (
+              <SelectItem key={index} value={index.toString()}>
+                <span className="flex items-baseline gap-2">
+                  <span>{isNepaliLanguage ? month.np : month.en}</span>
+                  {month.ad && (
+                    <span className="text-[10px] text-muted-foreground tracking-tight">
+                      {month.ad}
+                    </span>
+                  )}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-        <div className="flex items-center justify-center gap-3 px-2">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Select
-              value={currentYear.toString()}
-              onValueChange={(value) => {
-                setCurrentNepaliDate(
-                  new NepaliDate(parseInt(value), currentMonth, 1)
-                )
-              }}
-            >
-              <SelectTrigger className="min-w-[120px] font-semibold text-indigo-800 dark:text-indigo-300 outline-none ring-0 focus:ring-0">
-                <SelectValue placeholder="Year" className="select-none" />
-              </SelectTrigger>
-              <SelectContent className="max-h-48">
-                {availableYears.map((year) => (
-                  <SelectItem key={year.en} value={year.en.toString()}>
-                    {isNepaliLanguage ? year.np : `${year.en}`}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select
-              value={currentMonth.toString()}
-              onValueChange={(value) => {
-                setCurrentNepaliDate(
-                  new NepaliDate(currentYear, parseInt(value), 1)
-                )
-              }}
-            >
-              <SelectTrigger className="min-w-[120px] font-semibold text-indigo-800 dark:text-indigo-300 outline-none ring-0 focus:ring-0">
-                <SelectValue placeholder="Month" className="select-none" />
-              </SelectTrigger>
-              <SelectContent className="max-h-48">
-                {nepaliMonths.map((month, index) => (
-                  <SelectItem key={index} value={index.toString()}>
-                    {isNepaliLanguage ? month.np : month.en}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {nepaliMonths[currentMonth]?.ad && (
-            <Badge
-              variant="secondary"
-              className="hidden sm:inline-block text-sm rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
-            >
-              {nepaliMonths[currentMonth]?.ad}
-            </Badge>
-          )}
-        </div>
-
-        <Button
-          variant="outline"
-          size="icon"
-          disabled={isNextDisabled}
-          className={cn(
-            "flex items-center justify-center disabled:cursor-not-allowed flex-shrink-0 rounded-lg transition-all duration-200",
-            isNextDisabled
-              ? "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500"
-              : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50"
-          )}
-          onClick={handleNextMonth}
-          aria-label="Next month"
+        <Select
+          value={currentYear.toString()}
+          onValueChange={(value) => {
+            setCurrentNepaliDate(
+              new NepaliDate(parseInt(value), currentMonth, 1)
+            )
+          }}
         >
-          <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-        </Button>
+          <SelectTrigger className="h-8 min-w-[88px] w-auto font-medium tracking-tight font-mono">
+            <SelectValue placeholder="Year" className="select-none" />
+          </SelectTrigger>
+          <SelectContent className="max-h-60">
+            {availableYears.map((year) => (
+              <SelectItem key={year.en} value={year.en.toString()}>
+                <span className="font-mono">
+                  {isNepaliLanguage ? year.np : `${year.en}`}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
+
+      <Button
+        variant="outline"
+        size="icon-sm"
+        disabled={isNextDisabled}
+        onClick={handleNextMonth}
+        aria-label="Next month"
+      >
+        <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
+      </Button>
     </div>
   )
 }

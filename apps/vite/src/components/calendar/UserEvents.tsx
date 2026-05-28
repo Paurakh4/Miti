@@ -34,9 +34,9 @@ import {
 import { Button } from "@/components/ui/button"
 import { getEventColorInTwClasses } from "@/constants/colors"
 import { useTranslation } from "react-i18next"
+import { cn } from "@/lib/utils"
 
 const UserEvents = ({ selectedDate }: { selectedDate: string }) => {
-  console.log({ selectedDate })
   const baseDate = new Date(selectedDate)
   const { t } = useTranslation()
 
@@ -50,34 +50,31 @@ const UserEvents = ({ selectedDate }: { selectedDate: string }) => {
   })
 
   return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between gap-2 mb-4">
+    <div>
+      <div className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-indigo-600 dark:text-indigo-400">
-            <User />
+          <span className="text-muted-foreground">
+            <User size={16} />
           </span>
-
-          <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+          <h3 className="text-sm font-semibold uppercase tracking-tight text-foreground font-mono">
             {t("modal.User_Events")}
           </h3>
         </div>
-        <div>
-          <AddEventModal startDate={baseDate}>
-            <button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800 transition-colors text-white px-3 py-2 rounded-md flex items-center gap-1 text-xs shadow-sm">
-              <Plus className="text-white text-sm" />
-              Create Event
-            </button>
-          </AddEventModal>
-        </div>
+        <AddEventModal startDate={baseDate}>
+          <Button size="sm" variant="default" className="h-8">
+            <Plus className="h-3.5 w-3.5" />
+            New
+          </Button>
+        </AddEventModal>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {dayUserEvents?.events && dayUserEvents.events.length > 0 ? (
           dayUserEvents.events.map((event) => (
             <EventListItem key={event.id} event={event} />
           ))
         ) : (
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-muted-foreground rounded-md border border-dashed border-border bg-card px-4 py-3">
             No events scheduled
           </p>
         )}
@@ -132,148 +129,100 @@ const EventListItem = ({ event }: { event: CalendarEvent }) => {
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem
           value={event.id}
-          className={`rounded-lg overflow-hidden shadow-sm ${colorStyle.border} border dark:border-opacity-20`}
+          className={cn(
+            "rounded-md overflow-hidden border border-border bg-card",
+            colorStyle.border
+          )}
         >
           <AccordionTrigger
-            className={`p-3 hover:bg-opacity-80 transition-colors ${colorStyle.bg} dark:bg-opacity-20 !no-underline`}
+            className={cn(
+              "px-3 py-2.5 hover:bg-accent/40 transition-colors !no-underline",
+              colorStyle.bg
+            )}
           >
             <div className="flex-1 min-w-0 text-left">
-              <div className="flex items-center gap-2 w-[320px] ">
-                <h4
-                  className={`font-medium text-sm ${colorStyle.text} dark:text-opacity-90 w-full truncate`}
-                >
-                  {event.summary}
-                </h4>
-              </div>
-              <div className="flex items-center text-xs text-gray-600 dark:text-gray-400 mt-1.5 gap-2 overflow-hidden">
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <Clock size={12} className="flex-shrink-0" />
-                  <span>
-                    {startTime}
-                    {startTime !== "All day" ? ` - ${endTime}` : ""}
-                  </span>
-                </div>
+              <h4
+                className={cn(
+                  "text-sm font-medium tracking-tight truncate",
+                  colorStyle.text
+                )}
+              >
+                {event.summary}
+              </h4>
+              <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Clock size={11} className="flex-shrink-0" />
+                <span className="font-mono tabular-nums">
+                  {startTime}
+                  {startTime !== "All day" ? ` – ${endTime}` : ""}
+                </span>
               </div>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="p-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 pb-4">
+          <AccordionContent className="px-3 py-3 bg-card border-t border-border space-y-3">
             {event.description && (
-              <div className="mb-4 pb-3 border-b border-gray-100 dark:border-gray-800">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <FileText
-                    size={14}
-                    className="text-gray-500 dark:text-gray-400 flex-shrink-0"
-                  />
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                    Description
-                  </span>
-                </div>
-
+              <DetailRow
+                icon={<FileText size={13} />}
+                label="Description"
+              >
                 <div
-                  className="text-sm text-gray-700 dark:text-gray-300 pl-6 break-words [&>a]:text-indigo-400 dark:[&>a]:text-indigo-300"
+                  className="text-sm text-foreground break-words [&>a]:text-foreground [&>a]:underline [&>a]:underline-offset-4"
                   dangerouslySetInnerHTML={{ __html: event.description }}
-                ></div>
-              </div>
+                />
+              </DetailRow>
             )}
 
-            <div className="grid grid-cols-1 gap-4">
-              {event.calendarId && (
-                <div className="flex items-start gap-2">
-                  <CalendarDays
-                    size={14}
-                    className="mt-0.5 text-gray-500 dark:text-gray-400 flex-shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1">
-                      Calendar
-                    </span>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 break-words">
-                      {event.calendarId}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {event.location && (
-                <div className="flex items-start gap-2">
-                  <MapPin
-                    size={14}
-                    className="mt-0.5 text-gray-500 dark:text-gray-400 flex-shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1">
-                      Location
-                    </span>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 break-words">
-                      {event.location}
-                    </p>
-                  </div>
-                </div>
-              )}
+            {event.calendarId && (
+              <DetailRow
+                icon={<CalendarDays size={13} />}
+                label="Calendar"
+              >
+                <p className="text-sm text-foreground break-words">
+                  {event.calendarId}
+                </p>
+              </DetailRow>
+            )}
 
-              <div className="flex items-start gap-2">
-                <Users
-                  size={14}
-                  className="mt-0.5 text-gray-500 dark:text-gray-400 flex-shrink-0"
-                />
-                <div className="min-w-0">
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1">
-                    Organizer
-                  </span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 break-words">
-                    {event.organizer.displayName || event.organizer.email}
-                  </p>
-                </div>
+            {event.location && (
+              <DetailRow icon={<MapPin size={13} />} label="Location">
+                <p className="text-sm text-foreground break-words">
+                  {event.location}
+                </p>
+              </DetailRow>
+            )}
+
+            <DetailRow icon={<Users size={13} />} label="Organizer">
+              <p className="text-sm text-foreground break-words">
+                {event.organizer.displayName || event.organizer.email}
+              </p>
+            </DetailRow>
+
+            {event.visibility && (
+              <DetailRow icon={<Eye size={13} />} label="Visibility">
+                <p className="text-sm text-foreground capitalize">
+                  {event.visibility}
+                </p>
+              </DetailRow>
+            )}
+
+            {event.recurrence && (
+              <DetailRow icon={<Repeat size={13} />} label="Recurrence">
+                <p className="text-sm text-foreground">Recurring event</p>
+              </DetailRow>
+            )}
+
+            {(event.accessRole === "owner" ||
+              event.accessRole === "writer") && (
+              <div className="pt-2 border-t border-border">
+                <Button
+                  onClick={handleDeleteClick}
+                  variant="destructive"
+                  size="sm"
+                >
+                  <Trash2 size={14} />
+                  Delete event
+                </Button>
               </div>
-
-              {event.visibility && (
-                <div className="flex items-start gap-2">
-                  <Eye
-                    size={14}
-                    className="mt-0.5 text-gray-500 dark:text-gray-400 flex-shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1">
-                      Visibility
-                    </span>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 capitalize">
-                      {event.visibility}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {event.recurrence && (
-                <div className="flex items-start gap-2">
-                  <Repeat
-                    size={14}
-                    className="mt-0.5 text-gray-500 dark:text-gray-400 flex-shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1">
-                      Recurrence
-                    </span>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      Recurring event
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {(event.accessRole === "owner" ||
-                event.accessRole === "writer") && (
-                <div className="pt-4 border-t border-gray-100">
-                  <Button
-                    onClick={handleDeleteClick}
-                    variant="destructive"
-                    className="flex items-center gap-2 text-sm"
-                    size="sm"
-                  >
-                    <Trash2 size={16} />
-                    Delete Event
-                  </Button>
-                </div>
-              )}
-            </div>
+            )}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -284,17 +233,19 @@ const EventListItem = ({ event }: { event: CalendarEvent }) => {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-lg font-bold">
-              <AlertCircle className="text-red-500" size={20} />
-              Delete Event
+            <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+              <AlertCircle className="text-destructive" size={18} />
+              Delete event
             </DialogTitle>
-            <DialogDescription className="text-gray-600">
-              Are you sure you want to delete "
-              <span className="font-medium">{event.summary}</span>"? This action
-              cannot be undone.
+            <DialogDescription>
+              Are you sure you want to delete{" "}
+              <span className="font-medium text-foreground">
+                {event.summary}
+              </span>
+              ? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="sm:justify-end gap-2 mt-4">
+          <DialogFooter className="sm:justify-end gap-2 mt-2">
             <Button
               type="button"
               variant="outline"
@@ -315,5 +266,25 @@ const EventListItem = ({ event }: { event: CalendarEvent }) => {
     </>
   )
 }
+
+const DetailRow = ({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode
+  label: string
+  children: React.ReactNode
+}) => (
+  <div className="flex items-start gap-2">
+    <span className="mt-0.5 text-muted-foreground flex-shrink-0">{icon}</span>
+    <div className="min-w-0 flex-1">
+      <span className="block text-[10px] font-mono uppercase tracking-tight text-muted-foreground mb-0.5">
+        {label}
+      </span>
+      {children}
+    </div>
+  </div>
+)
 
 export default UserEvents

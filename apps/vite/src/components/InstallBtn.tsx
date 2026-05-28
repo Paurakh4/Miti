@@ -59,31 +59,31 @@ const InstallPWA = ({
       <div
         className={`${
           t.visible ? "animate-enter" : "animate-leave"
-        } pointer-events-auto flex w-full max-w-md rounded-md border bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:border-gray-600 dark:bg-gray-800`}
+        } pointer-events-auto flex w-full max-w-md rounded-md border border-border bg-card text-card-foreground shadow-lg`}
       >
         <div className="w-0 flex-1 p-4">
           <div className="flex items-start">
             <div className="flex-shrink-0 pt-0.5">
               <img
-                className="h-10 w-10 rounded-full"
+                className="h-10 w-10 rounded-md border border-border"
                 src="/icons/icon-96x96.png"
                 alt=""
               />
             </div>
             <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                App Installation Available.
+              <p className="text-sm font-medium tracking-tight text-foreground">
+                App installation available
               </p>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                ~150KB, works offline.
+              <p className="mt-1 text-xs text-muted-foreground">
+                ~150KB, works offline
               </p>
             </div>
           </div>
         </div>
-        <div className="flex border-l border-gray-200">
+        <div className="flex border-l border-border">
           <button
             onClick={onClick}
-            className="flex w-full items-center justify-center rounded-none rounded-r-lg border border-transparent p-4 text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+            className="flex w-full items-center justify-center rounded-none rounded-r-md px-5 py-4 text-sm font-medium text-foreground hover:bg-accent focus-visible:outline-none transition-colors"
           >
             Install
           </button>

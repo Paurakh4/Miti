@@ -7,6 +7,7 @@ import UserEvents from "./UserEvents"
 import { useUser } from "@miti/query/user"
 import { apiBaseUrl } from "@/helper/api"
 import useLanguage from "@/helper/useLanguage"
+import { Sunrise, Sunset } from "lucide-react"
 
 export function DayDetail({ dayData }: { dayData: NewCalendarData }) {
   const { status } = useUser(apiBaseUrl)
@@ -17,82 +18,87 @@ export function DayDetail({ dayData }: { dayData: NewCalendarData }) {
 
   const { isNepaliLanguage } = useLanguage()
   return (
-    <div className="overflow-y-auto">
-      <div className="flex items-center space-x-4 rounded-lg">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-4 pb-4 border-b border-border">
         <div
           className={cn(
-            "rounded-lg bg-gray-200 dark:bg-gray-700 text-center w-16 h-16 flex flex-col gap-1 items-center justify-center",
-            isHoliday &&
-              "text-red-500 dark:text-red-400 bg-red-100 dark:bg-red-900/50"
+            "kbd-surface flex h-16 w-16 flex-col items-center justify-center rounded-lg flex-shrink-0",
+            isHoliday && "bg-destructive/10 border-destructive/30"
           )}
         >
-          <div>
-            <p className="text-2xl font-semibold dark:text-gray-100">
-              {isNepaliLanguage
-                ? dayData.calendarInfo.dates.bs.day.np
-                : dayData.calendarInfo.dates.ad.day.en}
-            </p>
-            <p className="text-xs dark:text-gray-300">
-              {/* {dayData.calendarInfo.days.dayOfWeek.np} */}
-              {isNepaliLanguage
-                ? dayData.calendarInfo.days.dayOfWeek.np
-                : dayData.calendarInfo.days.dayOfWeek.en}
-            </p>
-          </div>
+          <p
+            className={cn(
+              "text-2xl font-semibold leading-none tabular-nums",
+              isHoliday ? "text-destructive" : "text-foreground"
+            )}
+          >
+            {isNepaliLanguage
+              ? dayData.calendarInfo.dates.bs.day.np
+              : dayData.calendarInfo.dates.ad.day.en}
+          </p>
+          <p
+            className={cn(
+              "text-[10px] mt-1 uppercase tracking-tight font-mono leading-none",
+              isHoliday ? "text-destructive/80" : "text-muted-foreground"
+            )}
+          >
+            {isNepaliLanguage
+              ? dayData.calendarInfo.days.dayOfWeek.np?.slice(0, 3)
+              : dayData.calendarInfo.days.dayOfWeek.en?.slice(0, 3)}
+          </p>
         </div>
-        <div className="flex-1">
-          <span className="flex flex-row">
-            <p className="font-bold text-left flex-1 text-2xl dark:text-gray-100">
-              {isNepaliLanguage
-                ? dayData.calendarInfo.dates.bs.month.np
-                : dayData.calendarInfo.dates.ad.month.en}
-              ,
+
+        <div className="min-w-0 flex-1">
+          <p className="text-xl font-semibold tracking-tight text-foreground truncate">
+            {isNepaliLanguage
+              ? dayData.calendarInfo.dates.bs.month.np
+              : dayData.calendarInfo.dates.ad.month.en}
+            ,{" "}
+            <span className="font-mono tabular-nums">
               {isNepaliLanguage
                 ? dayData.calendarInfo.dates.bs.year.np
                 : dayData.calendarInfo.dates.ad.year.en}
-            </p>
-          </span>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {dayData.tithiDetails?.title.np},{" "}
-            {dayData.panchangaDetails?.pakshya.np}
+            </span>
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-500">
-            ने.सं. {dayData.calendarInfo.nepaliEra.nepalSambat.year.np},{" "}
-            {dayData.calendarInfo.nepaliEra.nepalSambat.month.np}
+          <p className="text-sm text-muted-foreground truncate">
+            {dayData.tithiDetails?.title.np}
+            {dayData.panchangaDetails?.pakshya.np && (
+              <> · {dayData.panchangaDetails.pakshya.np}</>
+            )}
+          </p>
+          <p className="text-xs text-muted-foreground/80 mt-0.5 truncate">
+            ने.सं.{" "}
+            <span className="font-mono">
+              {dayData.calendarInfo.nepaliEra.nepalSambat.year.np}
+            </span>{" "}
+            · {dayData.calendarInfo.nepaliEra.nepalSambat.month.np}
           </p>
         </div>
-        <div className="flex flex-col my-4 justify-between">
-          <div className="flex items-center gap-2">
-            <img
-              src="https://img.icons8.com/color/48/000000/sunrise.png"
-              alt="sunrise"
-              className="size-8"
-            />
-            <p className="text-md text-gray-600 dark:text-gray-400">
-              {dayData.panchangaDetails?.times.sunrise}
-            </p>
+
+        <div className="hidden sm:flex flex-col gap-2 text-xs">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Sunrise size={14} />
+            <span className="font-mono tabular-nums text-foreground">
+              {dayData.panchangaDetails?.times.sunrise ?? "--:--"}
+            </span>
           </div>
-          <div className="flex items-center gap-2">
-            <img
-              src="https://img.icons8.com/color/48/000000/sunset.png"
-              alt="sunrise"
-              className="size-8"
-            />
-            <p className="text-md text-gray-600 dark:text-gray-400">
-              {dayData.panchangaDetails?.times.sunset}
-            </p>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Sunset size={14} />
+            <span className="font-mono tabular-nums text-foreground">
+              {dayData.panchangaDetails?.times.sunset ?? "--:--"}
+            </span>
           </div>
         </div>
       </div>
-      <div className="my-4">
+
+      <div className="space-y-6">
         {status === "LOGGED_IN" && (
           <UserEvents
             selectedDate={dayData.calendarInfo.dates.ad.full.en ?? ""}
           />
         )}
         <CalendarEvents events={calendarEvents} />
-      </div>
-      <div>
         <Panchang data={dayData} />
       </div>
     </div>

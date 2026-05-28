@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Moon, Sun, LogOut, Settings } from "lucide-react"
+import { Moon, Sun, LogOut, Settings, Languages, LogIn } from "lucide-react"
 
 const UserSettings = ({
   userData,
@@ -32,8 +32,9 @@ const UserSettings = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          size="icon"
-          className="rounded-full h-9 w-9 p-0 border-2"
+          size="icon-sm"
+          className="rounded-full p-0 overflow-hidden"
+          aria-label="Settings"
         >
           {isLoggedIn ? (
             <Avatar className="h-full w-full">
@@ -45,47 +46,42 @@ const UserSettings = ({
                 }
                 alt="User"
               />
-              <AvatarFallback>
+              <AvatarFallback className="text-xs font-medium">
                 {userData?.username?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           ) : (
-            <Settings className="h-5 w-5" />
+            <Settings className="h-4 w-4" />
           )}
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="w-52">
         {!isOffline && (
           <>
-            <DropdownMenuItem asChild className="p-0">
-              <a
-                href={
-                  isLoggedIn
-                    ? `${apiBaseUrl}/auth/logout`
-                    : `${apiBaseUrl}/auth/google?redirect=${window.location.origin}`
-                }
-                target="_self"
-                className="cursor-pointer"
-              >
-                {isLoggedIn ? (
-                  <div className="p-2 flex items-center">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>{t("navbar.Sign_out")}</span>
-                  </div>
-                ) : (
-                  <img
-                    src={
-                      darkMode
-                        ? "/icons/btn_google_signin_dark_normal_web@2x.png"
-                        : "/icons/btn_google_signin_light_normal_web@2x.png"
-                    }
-                    className="!p-0"
-                    alt="Google"
-                  />
-                )}
-              </a>
-            </DropdownMenuItem>
+            {isLoggedIn ? (
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <a
+                  href={`${apiBaseUrl}/auth/logout`}
+                  target="_self"
+                  className="flex items-center"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>{t("navbar.Sign_out")}</span>
+                </a>
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <a
+                  href={`${apiBaseUrl}/auth/google?redirect=${window.location.origin}`}
+                  target="_self"
+                  className="flex items-center"
+                >
+                  <LogIn className="mr-2 h-4 w-4" />
+                  <span>Sign in with Google</span>
+                </a>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
           </>
         )}
@@ -94,25 +90,27 @@ const UserSettings = ({
           onClick={() =>
             i18n.changeLanguage(i18n.language === "en" ? "ne" : "en")
           }
+          className="cursor-pointer"
         >
-          <img
-            src={i18n.language === "en" ? "/icons/np.png" : "/icons/en.png"}
-            alt={i18n.language === "en" ? "Nepali" : "English"}
-            className="mr-2 h-4 "
-          />
-          <span>{i18n.language === "en" ? "नेपाली" : "English"}</span>
+          <Languages className="mr-2 h-4 w-4" />
+          <span className="flex-1">
+            {i18n.language === "en" ? "नेपाली" : "English"}
+          </span>
+          <span className="ml-2 text-[10px] font-mono uppercase tracking-tight text-muted-foreground">
+            {i18n.language === "en" ? "NE" : "EN"}
+          </span>
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={toggleDarkMode}>
+        <DropdownMenuItem onClick={toggleDarkMode} className="cursor-pointer">
           {darkMode ? (
             <>
               <Sun className="mr-2 h-4 w-4" />
-              <span>Light mode</span>
+              <span className="flex-1">Light mode</span>
             </>
           ) : (
             <>
               <Moon className="mr-2 h-4 w-4" />
-              <span>Dark mode</span>
+              <span className="flex-1">Dark mode</span>
             </>
           )}
         </DropdownMenuItem>

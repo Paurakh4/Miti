@@ -20,7 +20,7 @@ export const DarkModeProvider = ({ children }: { children: React.ReactNode }) =>
 
   useEffect(() => {
     localStorage.setItem(darkModeLocalStorageKey, `${darkMode}`);
-    document.body.classList.toggle("bg-gray-800", darkMode);
+    document.documentElement.classList.toggle("dark", darkMode);
     document.body.classList.toggle("dark", darkMode);
   }, [darkMode]);
 

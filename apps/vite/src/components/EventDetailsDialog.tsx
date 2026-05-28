@@ -40,104 +40,103 @@ export default function EventDetailsDialog({
   const { mutateAsync, isPending } = useDeleteEvent(apiBaseUrl, handleSuccess)
 
   return (
-    <>
-      <Transition appear show={modalOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={closeModal}>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
-          </Transition.Child>
+    <Transition appear show={modalOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-50" onClose={closeModal}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-200"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-foreground/40 backdrop-blur-sm" />
+        </Transition.Child>
 
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-lg bg-white pb-4 pl-6 pr-6 pt-4 text-left align-middle shadow-xl transition-all dark:bg-gray-800">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900 dark:text-white "
-                  >
-                    <div className="flex items-center justify-between border-b py-3 text-center">
-                      <div>
-                        <h1 className="text-left font-medium">
-                          {event.summary}
-                        </h1>
-                        {
-                          <div className="time flex gap-3 text-left text-sm text-gray-500 dark:text-gray-200">
-                            <ClockIcon className="h-5 w-5" />
-                            <h1>{eventDuration(event, isNepaliLanguage)}</h1>
-                          </div>
-                        }
-                      </div>
-
-                      <XMarkIcon
-                        onClick={onClose}
-                        className="h-6 w-6 cursor-pointer rounded-full hover:bg-gray-200 dark:hover:bg-gray-500"
-                      />
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-200"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-150"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-lg border border-border bg-card text-left align-middle shadow-xl transition-all">
+                <Dialog.Title
+                  as="div"
+                  className="flex items-start justify-between gap-4 border-b border-border px-5 pt-4 pb-3"
+                >
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold tracking-tight text-foreground truncate">
+                      {event.summary}
+                    </h3>
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <ClockIcon className="h-3.5 w-3.5" />
+                      <span className="font-mono tabular-nums">
+                        {eventDuration(event, isNepaliLanguage)}
+                      </span>
                     </div>
-                  </Dialog.Title>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                    aria-label="Close"
+                  >
+                    <XMarkIcon className="h-4 w-4" />
+                  </button>
+                </Dialog.Title>
+
+                <div className="px-5 py-4 space-y-3">
                   {event.description && (
-                    <div className="mt-2 flex gap-2">
-                      <Bars3BottomLeftIcon className="h-6 w-6 dark:text-white" />
-                      <p className=" text-gray-500 dark:text-gray-200">
+                    <div className="flex gap-2">
+                      <Bars3BottomLeftIcon className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                      <p className="text-sm text-foreground leading-relaxed">
                         {event.description}
                       </p>
                     </div>
                   )}
 
-                  <div className="mt-2">
-                    <div>
-                      {event.location && (
-                        <div className="flex w-full items-center gap-2 py-1">
-                          <MapPinIcon className="h-6 w-6 dark:text-white" />
-                          <h1 className="text-gray-500 dark:text-gray-200">
-                            {" "}
-                            {event.location}
-                          </h1>
-                        </div>
-                      )}
+                  {event.location && (
+                    <div className="flex items-center gap-2">
+                      <MapPinIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                      <p className="text-sm text-foreground">
+                        {event.location}
+                      </p>
                     </div>
-                    {(event.accessRole === "owner" ||
-                      event.accessRole === "writer") && (
+                  )}
+
+                  {(event.accessRole === "owner" ||
+                    event.accessRole === "writer") && (
+                    <div className="flex justify-end pt-3 border-t border-border">
                       <button
                         disabled={isPending}
                         onClick={async () => {
                           await mutateAsync(event)
                           onClose()
                         }}
-                        className="ml-auto flex max-w-[140px]  cursor-pointer items-center justify-center gap-1 rounded-md border border-transparent bg-indigo-600 px-3 py-1 text-sm font-medium text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500  focus:ring-offset-2 disabled:bg-indigo-400"
+                        className="inline-flex items-center gap-1.5 rounded-md bg-destructive px-3 py-1.5 text-sm font-medium text-destructive-foreground shadow-[0_1px_0_0_hsl(0_0%_0%/0.12),inset_0_1px_0_0_hsl(0_0%_100%/0.15)] hover:bg-destructive/95 disabled:opacity-60 transition-colors"
                       >
-                        <h1>
-                          {isPending ? (
-                            <Spinner className="h-5 w-5 fill-white" />
-                          ) : (
-                            t("homepage.Delete")
-                          )}
-                        </h1>
-                        {!isPending && <TrashIcon className="h-5 w-5" />}
+                        {isPending ? (
+                          <Spinner className="h-4 w-4 fill-destructive-foreground" />
+                        ) : (
+                          <TrashIcon className="h-4 w-4" />
+                        )}
+                        {t("homepage.Delete")}
                       </button>
-                    )}
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
+                    </div>
+                  )}
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
           </div>
-        </Dialog>
-      </Transition>
-    </>
+        </div>
+      </Dialog>
+    </Transition>
   )
 }

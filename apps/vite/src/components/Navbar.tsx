@@ -28,38 +28,43 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { data, status } = useUser(apiBaseUrl)
 
-  console.log({ data })
+  const isActive = (href: string) => {
+    if (href === "/") return location.pathname === "/" || location.pathname.startsWith("/calendar")
+    return location.pathname.startsWith(href)
+  }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-        <div className="flex items-center gap-2 md:gap-4">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+      <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4 md:px-6">
+        <div className="flex items-center gap-2 md:gap-3">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="secondary" size="icon" className="mr-2">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
+              <Button variant="outline" size="icon-sm" aria-label="Toggle menu">
+                <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="px-2">
+            <SheetContent side="left" className="px-2 bg-card">
               <div className="flex flex-col space-y-4">
-                <Link to="/" className="flex items-center px-4">
+                <Link to="/" className="flex items-center px-4 pt-2">
                   <img
                     src="/icons/icon-512x512.png"
                     alt="Miti"
                     className="h-8 w-auto mr-2"
                   />
+                  <span className="font-semibold tracking-tight text-foreground">
+                    Miti
+                  </span>
                 </Link>
-                <nav className="flex flex-col space-y-1">
+                <nav className="flex flex-col space-y-1 px-2">
                   {navigation.map((item) => (
                     <SheetClose asChild key={item.name}>
                       <Link
                         to={item.href}
                         className={cn(
-                          "flex items-center py-3 px-4 rounded-md text-sm font-medium dark:text-accent-foreground transition-colors",
-                          item.href === location.pathname
-                            ? "bg-accent text-accent-foreground"
-                            : "hover:bg-accent hover:text-accent-foreground"
+                          "flex items-center py-2.5 px-3 rounded-md text-sm font-medium transition-colors",
+                          isActive(item.href)
+                            ? "bg-accent text-foreground"
+                            : "text-muted-foreground hover:bg-accent hover:text-foreground"
                         )}
                       >
                         {t(item.name)}
@@ -70,7 +75,7 @@ export default function Navbar() {
                     <InstallPWA>
                       <Button
                         variant="ghost"
-                        className="w-full justify-start text-sm font-medium px-4"
+                        className="w-full justify-start text-sm font-medium px-3"
                       >
                         Install
                       </Button>
@@ -80,29 +85,34 @@ export default function Navbar() {
               </div>
             </SheetContent>
           </Sheet>
-          <Link to="/" className="flex items-center space-x-2">
+
+          <Link
+            to="/"
+            className="flex items-center gap-2 rounded-md px-1.5 py-1"
+          >
             <img
               src="/icons/icon-512x512.png"
               alt="Miti"
-              className="h-8 w-auto"
+              className="h-7 w-auto"
             />
+            <span className="hidden sm:inline-block font-semibold tracking-tight text-foreground">
+              Miti
+            </span>
           </Link>
         </div>
 
-        <nav className="hidden md:flex items-center space-x-1">
+        <nav className="hidden md:flex items-center gap-0.5">
           {navigation.map((item) => (
             <Link
               key={item.name}
               to={item.href}
               className={cn(
-                "px-3 py-2 text-sm font-medium rounded-md transition-colors text-accent-foreground",
-                item.href === location.pathname
-                  ? "bg-accent"
-                  : "text-muted-foreground hover:bg-accent "
+                "relative px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                isActive(item.href)
+                  ? "text-foreground bg-accent"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/60"
               )}
-              aria-current={
-                item.href === location.pathname ? "page" : undefined
-              }
+              aria-current={isActive(item.href) ? "page" : undefined}
             >
               {t(item.name)}
             </Link>
@@ -111,7 +121,7 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="sm"
-              className="px-3 py-2 text-sm font-medium"
+              className="px-3 text-sm font-medium text-muted-foreground hover:text-foreground"
             >
               Install
             </Button>

@@ -1,12 +1,11 @@
 import React, { useMemo } from "react"
 import UpcomingEvent from "./UpcomingEvent"
 import { EventDetail, NewCalendarData } from "@miti/types"
-import { ArrowRight, Calendar, Loader2 } from "lucide-react"
+import { ArrowRight, CalendarOff, Loader2 } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import NepaliDate from "nepali-datetime"
 import { isBefore } from "date-fns"
 import useLanguage from "@/helper/useLanguage"
-import { cn } from "@/lib/utils"
 
 export type Event = {
   date: string
@@ -23,7 +22,7 @@ const EventList: React.FC<{
   isHoliday?: boolean
   title?: string
   isLoading?: boolean
-}> = ({ data, isHoliday, title, isLoading }) => {
+}> = ({ data, isHoliday, isLoading }) => {
   const { BSYear, BSMonth } = useParams()
   const { isNepaliLanguage } = useLanguage()
   const navigate = useNavigate()
@@ -75,71 +74,55 @@ const EventList: React.FC<{
     navigate(path)
   }
 
-  const renderEmptyState = () => (
-    <div
-      className={cn(
-        "flex gap-4 items-center p-4 rounded-lg border border-dashed border-gray-200 dark:border-gray-700",
-        isHoliday
-          ? "bg-rose-50 dark:bg-rose-900/30"
-          : "bg-indigo-50 dark:bg-indigo-900"
-      )}
-    >
-      <Calendar
-        className={cn(isHoliday ? "text-rose-600" : "text-indigo-600")}
-        size={24}
-      />
-      <h3 className="text-gray-700 dark:text-gray-300 text-sm font-semibold">
-        {/* {isHoliday ? "No holidays" : "No events"} */}
-        {isNepaliLanguage
-          ? isHoliday
-            ? "छुट्टी छैन"
-            : "कार्यक्रम छैन"
-          : isHoliday
-          ? "No holidays"
-          : "No events"}
-      </h3>
-    </div>
-  )
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-32 rounded-md border border-dashed border-border bg-card">
+        <Loader2 className="animate-spin text-muted-foreground" size={20} />
+      </div>
+    )
+  }
+
+  if (!hasEvents) {
+    return (
+      <div className="flex items-center gap-3 rounded-md border border-dashed border-border bg-card px-4 py-5">
+        <CalendarOff
+          size={18}
+          className="text-muted-foreground flex-shrink-0"
+        />
+        <p className="text-sm text-muted-foreground">
+          {isNepaliLanguage
+            ? isHoliday
+              ? "छुट्टी छैन"
+              : "कार्यक्रम छैन"
+            : isHoliday
+            ? "No upcoming holidays"
+            : "No upcoming events"}
+        </p>
+      </div>
+    )
+  }
 
   return (
-    <div className="bg-white dark:bg-gray-900 min-w-80 rounded-lg">
-      <h2 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-4 text-center">
-        {title}
-      </h2>
+    <div className="space-y-2">
+      {filteredEvents.slice(0, 5).map((event, index) => (
+        <UpcomingEvent
+          key={index}
+          event={event}
+          isHoliday={isHoliday && event.isHoliday}
+        />
+      ))}
 
-      {isLoading && (
-        <div className="flex justify-center items-center h-40">
-          <Loader2
-            className="animate-spin text-gray-500 dark:text-gray-400"
-            size={32}
+      {filteredEvents.length > 5 && (
+        <button
+          className="group inline-flex w-full items-center justify-center gap-1 rounded-md border border-transparent px-2 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+          onClick={handleViewAll}
+        >
+          View all {filteredEvents.length}
+          <ArrowRight
+            size={12}
+            className="transition-transform group-hover:translate-x-0.5"
           />
-        </div>
-      )}
-
-      {!isLoading && !hasEvents && renderEmptyState()}
-
-      {!isLoading && hasEvents && (
-        <div className="space-y-3">
-          {filteredEvents.slice(0, 5).map((event, index) => (
-            <UpcomingEvent
-              key={index}
-              event={event}
-              isHoliday={isHoliday && event.isHoliday}
-            />
-          ))}
-
-          {filteredEvents.length > 5 && (
-            <div className="flex justify-end pt-2">
-              <button
-                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-medium gap-1 flex items-center justify-center transition-colors"
-                onClick={handleViewAll}
-              >
-                View all
-                <ArrowRight size={14} />
-              </button>
-            </div>
-          )}
-        </div>
+        </button>
       )}
     </div>
   )

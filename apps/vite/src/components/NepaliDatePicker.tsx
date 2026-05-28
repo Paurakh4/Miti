@@ -3,6 +3,7 @@ import NepaliDate from "nepali-datetime"
 import { Combobox, Transition } from "@headlessui/react"
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid"
 import nepaliDateData from "../constants/nepaliDateData"
+import { cn } from "@/lib/utils"
 
 function Picker({
   date,
@@ -29,7 +30,7 @@ function Picker({
     item.label.toLowerCase().includes(query.toLowerCase())
   )
   return (
-    <div className={`${title == "year" ? "w-24" : "w-20"}`}>
+    <div className={cn(title === "year" ? "w-24" : "w-20")}>
       <Combobox
         value={date}
         onChange={(value) => {
@@ -49,14 +50,22 @@ function Picker({
         }}
       >
         <div className="relative">
-          <div className="relative w-full cursor-default overflow-hidden rounded-md border bg-white text-left shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 dark:border-gray-400 dark:bg-gray-800 sm:text-sm">
+          <div
+            className={cn(
+              "relative w-full cursor-default overflow-hidden rounded-md border border-input bg-card text-left",
+              "shadow-[inset_0_1px_0_0_hsl(0_0%_0%/0.02)]",
+              "transition-colors duration-150",
+              "hover:border-foreground/30",
+              "focus-within:border-foreground/50"
+            )}
+          >
             <Combobox.Input
-              className="w-full rounded-md border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:outline-indigo-600 focus:ring-0 dark:bg-gray-800 dark:text-white"
+              className="w-full rounded-md border-none bg-transparent py-2 pl-3 pr-9 text-sm leading-5 text-foreground tabular-nums font-mono focus:outline-none focus:ring-0"
               onChange={(event) => setQuery(event.target.value)}
             />
             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronUpDownIcon
-                className="h-5 w-5 text-gray-400"
+                className="h-4 w-4 text-muted-foreground"
                 aria-hidden="true"
               />
             </Combobox.Button>
@@ -68,9 +77,9 @@ function Picker({
             leaveTo="opacity-0"
             afterLeave={() => setQuery("")}
           >
-            <Combobox.Options className="scrollbar-hide absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 sm:text-sm">
+            <Combobox.Options className="scrollbar-hide absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-border bg-popover py-1 text-sm text-popover-foreground shadow-md focus:outline-none">
               {filtered.length === 0 && query !== "" ? (
-                <div className="relative cursor-default select-none px-4 py-2 text-gray-700 dark:text-white">
+                <div className="relative select-none px-4 py-2 text-muted-foreground">
                   Nothing found.
                 </div>
               ) : (
@@ -78,11 +87,10 @@ function Picker({
                   <Combobox.Option
                     key={item.value}
                     className={({ active }) =>
-                      `relative cursor-default select-none py-2 pl-4 pr-2 ${
-                        active
-                          ? "bg-amber-100 text-amber-900"
-                          : "text-gray-900 dark:text-white"
-                      }`
+                      cn(
+                        "relative cursor-pointer select-none py-1.5 pl-7 pr-2 text-foreground transition-colors",
+                        active && "bg-accent text-accent-foreground"
+                      )
                     }
                     value={
                       title == "month"
@@ -92,22 +100,22 @@ function Picker({
                         : (parseInt(item.value) - 1).toString()
                     }
                   >
-                    {({ selected, active }) => (
+                    {({ selected }) => (
                       <>
                         <span
-                          className={`block truncate ml-2 text-sm ${
+                          className={cn(
+                            "block truncate font-mono tabular-nums",
                             selected ? "font-medium" : "font-normal"
-                          }`}
+                          )}
                         >
                           {item.label}
                         </span>
                         {selected ? (
-                          <span
-                            className={
-                              "absolute inset-y-0 left-0 flex items-center text-orange-600"
-                            }
-                          >
-                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-foreground">
+                            <CheckIcon
+                              className="h-3.5 w-3.5"
+                              aria-hidden="true"
+                            />
                           </span>
                         ) : null}
                       </>

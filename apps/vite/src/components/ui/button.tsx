@@ -5,26 +5,54 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  [
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap select-none",
+    "rounded-md text-sm font-medium tracking-tight",
+    "transition-[transform,background-color,border-color,color,box-shadow] duration-150",
+    "focus-visible:outline-none",
+    "disabled:pointer-events-none disabled:opacity-50",
+    "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  ].join(" "),
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        default: [
+          "bg-primary text-primary-foreground",
+          "border border-primary",
+          "shadow-[0_1px_0_0_hsl(var(--foreground)/0.18),inset_0_1px_0_0_hsl(0_0%_100%/0.12)]",
+          "hover:bg-primary/95 hover:translate-y-[-0.5px]",
+          "active:translate-y-[1px] active:shadow-none",
+        ].join(" "),
+        destructive: [
+          "bg-destructive text-destructive-foreground",
+          "border border-destructive",
+          "shadow-[0_1px_0_0_hsl(0_0%_0%/0.12),inset_0_1px_0_0_hsl(0_0%_100%/0.15)]",
+          "hover:bg-destructive/95 hover:translate-y-[-0.5px]",
+          "active:translate-y-[1px] active:shadow-none",
+        ].join(" "),
+        outline: [
+          "kbd-surface text-foreground",
+          "hover:bg-accent hover:text-accent-foreground",
+        ].join(" "),
+        secondary: [
+          "kbd-surface bg-secondary text-secondary-foreground",
+          "hover:bg-accent",
+        ].join(" "),
+        ghost: [
+          "border border-transparent",
+          "hover:bg-accent hover:text-accent-foreground",
+        ].join(" "),
+        link: [
+          "text-foreground underline-offset-4 hover:underline",
+          "decoration-foreground/30 hover:decoration-foreground",
+        ].join(" "),
       },
       size: {
-        default: "h-9 px-4 py-2",
+        default: "h-9 px-4",
         sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
+        lg: "h-10 rounded-md px-6",
         icon: "h-9 w-9",
+        "icon-sm": "h-8 w-8 rounded-md",
       },
     },
     defaultVariants: {

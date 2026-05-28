@@ -7,7 +7,7 @@ function Spinner({ className }: { className?: string }) {
         <svg
           aria-hidden="true"
           className={cn(
-            "mx-auto animate-spin fill-white text-gray-200 dark:text-gray-600",
+            "mx-auto h-5 w-5 animate-spin fill-foreground text-muted",
             className
           )}
           viewBox="0 0 100 101"

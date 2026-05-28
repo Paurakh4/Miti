@@ -1,12 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import CalendarHeader from "../components/calendar/CalendarHeader"
 import CalendarGrid from "../components/calendar/CalendarGrid"
 import EventList from "../components/calendar/EventList"
 import Today from "../components/calendar/Today"
 import Debugger from "../components/Debugger"
-import CurrencyConverterCard from "../components/extras/CurrencyConverterCard"
-import DateConverter from "../components/extras/DateConverter"
-import MetalPrice from "../components/extras/MetalPrice"
 import { useNavigate, useParams } from "react-router-dom"
 import NepaliDate from "nepali-datetime"
 import { useCalendarData, useTodayData } from "@miti/query/calendar"
@@ -25,7 +22,7 @@ const Calendar = () => {
     if (!BSYear || !BSMonth) return new NepaliDate()
     const year = parseInt(BSYear)
     const month = parseInt(BSMonth)
-    const isValid = year >= 2075 && year <= 2082 && month >= 1 && month <= 12
+    const isValid = year >= 2075 && year <= 2085 && month >= 1 && month <= 12
 
     if (isValid) return new NepaliDate(year, month - 1, 1)
     return new NepaliDate()
@@ -60,11 +57,12 @@ const Calendar = () => {
   )
 
   return (
-    <section className="relative bg-white dark:bg-gray-900 container">
+    <section className="bg-surface">
       <Debugger />
-      <div className="w-full max-w-7xl mx-auto">
-        <div className="flex flex-col  lg:flex-row gap-2">
-          <div className="px-2">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+          {/* Calendar column */}
+          <div className="min-w-0">
             <CalendarHeader
               currentNepaliDate={currentNepaliDate}
               setCurrentNepaliDate={setCurrentNepaliDate}
@@ -74,52 +72,51 @@ const Calendar = () => {
               setScope={setScope}
             />
             {view === "calendar" ? (
-              <>
-                {monthDataLoading ? (
-                  <div className="flex justify-center items-center h-[50vh]">
-                    <Loader2 className="animate-spin text-gray-500" size={32} />
-                  </div>
-                ) : (
-                  <CalendarGrid monthData={monthData} />
-                )}
-              </>
+              monthDataLoading ? (
+                <div className="flex h-[50vh] items-center justify-center rounded-lg border border-border bg-card">
+                  <Loader2
+                    className="animate-spin text-muted-foreground"
+                    size={28}
+                  />
+                </div>
+              ) : (
+                <CalendarGrid monthData={monthData} />
+              )
             ) : (
               <TimelineView monthData={monthData} scope={scope} />
             )}
           </div>
-          <div className="mt-4 mx-2">
+
+          {/* Sidebar column */}
+          <aside className="flex flex-col gap-6 lg:pt-[60px]">
             <Today data={todayData} isLoading={todayDataLoading} />
-            <div className="mt-6">
-              <h2 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
-                {t("navbar.Events")}
-              </h2>
+
+            <section>
+              <SectionHeader title={t("navbar.Events")} />
               <EventList data={monthData} isLoading={monthDataLoading} />
-            </div>
-            <div className="mt-6">
-              <h2 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">
-                {t("navbar.Holidays")}
-              </h2>
+            </section>
+
+            <section>
+              <SectionHeader title={t("navbar.Holidays")} />
               <EventList
                 data={monthData}
                 isHoliday
                 isLoading={monthDataLoading}
               />
-            </div>
-          </div>
+            </section>
+          </aside>
         </div>
-      </div>
-      <div className="flex flex-col gap-2 sm:flex-row">
-        {/* <MetalPrice /> */}
-        {/* <CurrencyConverterCard
-          initialAmount={1}
-          exchangeRate={134.21}
-          fromCurrency="USD"
-          toCurrency="NPR"
-        /> */}
-        {/* <DateConverter /> */}
       </div>
     </section>
   )
 }
+
+const SectionHeader = ({ title }: { title: string }) => (
+  <div className="flex items-baseline justify-between mb-3">
+    <h2 className="text-sm font-semibold uppercase tracking-tight text-muted-foreground font-mono">
+      {title}
+    </h2>
+  </div>
+)
 
 export default Calendar

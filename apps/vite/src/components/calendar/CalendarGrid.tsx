@@ -46,20 +46,22 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ monthData }) => {
 
   const dayNames = {
     en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-    np: ["आ", "सो", "मं", "बु", "बि", "शु", "श"],
+    np: ["आइत", "सोम", "मङ्गल", "बुध", "बिहि", "शुक्र", "शनि"],
   }
 
   const days = isNepaliLanguage ? dayNames.np : dayNames.en
 
   return (
-    <div className="rounded-xl max-w-4xl shadow-md overflow-hidden border dark:border-gray-700">
-      <div className="grid grid-cols-7 bg-indigo-50 dark:bg-indigo-950/30">
+    <div className="rounded-lg border border-border bg-card overflow-hidden">
+      {/* Day-of-week header */}
+      <div className="grid grid-cols-7 border-b border-border bg-card">
         {days.map((day, index) => (
           <div
             key={day}
             className={cn(
-              "py-3 text-center text-xs sm:text-sm font-medium border-b border-indigo-100 dark:border-indigo-900/30 dark:text-gray-300",
-              index === 6 && "text-red-600 dark:text-red-400"
+              "py-2 text-center text-[11px] sm:text-xs font-medium uppercase tracking-tight text-muted-foreground",
+              "font-mono",
+              index === 6 && "text-destructive/80"
             )}
           >
             {day}
@@ -67,9 +69,13 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ monthData }) => {
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-px sm:p-2 bg-white dark:bg-gray-900 sm:gap-2">
+      {/* Day cells */}
+      <div
+        className="grid grid-cols-7 bg-card"
+        role="grid"
+        aria-label="Calendar"
+      >
         {monthData.map((day) => {
-          console.log(day.calendarInfo.dates.bs.full.en)
           const dayDate = new NepaliDate(
             day.calendarInfo.dates.bs.full.en || ""
           ).getDateObject()
@@ -78,6 +84,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ monthData }) => {
           const isHoliday =
             day.eventDetails.filter((event) => event.isHoliday).length > 0 ||
             day.calendarInfo.days.codes.en === "7"
+
           const singleDayUserEvents = Array.from(
             new Set(
               getEventsOfSelectedDay(
@@ -89,16 +96,26 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ monthData }) => {
             )
           )
           const eventsCount = singleDayUserEvents.length
+          const hasEvent = day.eventDetails.length > 0
 
           return (
             <button
               key={day.calendarInfo.dates.bs.day.np}
+              role="gridcell"
+              aria-current={isToday ? "date" : undefined}
+              aria-label={`${day.calendarInfo.dates.bs.full.en}${
+                isHoliday ? ", holiday" : ""
+              }${hasEvent ? ", has event" : ""}`}
               className={cn(
-                "h-auto min-h-[60px] sm:aspect-square sm:min-h-[80px] p-1 sm:p-2 transition-all duration-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 group sm:rounded-lg",
-                isHoliday &&
-                  "bg-red-50/80 hover:bg-red-100/80 dark:bg-red-950/30 dark:hover:bg-red-950/50",
-                isToday && "bg-indigo-50 dark:bg-indigo-950/30",
-                isHoliday && isToday && "bg-red-100 dark:bg-red-950/50"
+                "group relative h-auto min-h-[64px] sm:min-h-[88px]",
+                "flex flex-col items-stretch p-1.5 sm:p-2",
+                "bg-card text-foreground",
+                "border-b border-r border-border",
+                "transition-colors duration-100",
+                "hover:bg-accent/50",
+                "focus:z-10",
+                isHoliday && "bg-destructive/[0.025] hover:bg-destructive/[0.07]",
+                isToday && "bg-foreground/[0.03]"
               )}
               style={
                 monthData.indexOf(day) === 0
@@ -107,80 +124,88 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ monthData }) => {
               }
               onClick={() => handleDayClick(day)}
             >
-              <div className="w-full h-full flex flex-col justify-between">
-                <div className="flex justify-between items-start">
-                  <span
+              {/* Top row: AD date + tithi */}
+              <div className="flex items-start justify-between gap-1">
+                <span
+                  className={cn(
+                    "font-mono text-[10px] sm:text-[11px] leading-none text-muted-foreground tracking-tight",
+                    isHoliday && "text-destructive/80"
+                  )}
+                >
+                  {isNepaliLanguage
+                    ? day.calendarInfo.dates.ad.day.np
+                    : day.calendarInfo.dates.ad.day.en}
+                </span>
+                <span className="hidden md:block truncate max-w-[70%] text-[10px] leading-none text-muted-foreground">
+                  {day.tithiDetails?.title.np}
+                </span>
+              </div>
+
+              {/* Center: BS day number */}
+              <div className="flex flex-1 items-center justify-center">
+                <span
+                  className={cn(
+                    "inline-flex items-center justify-center",
+                    "text-xl sm:text-2xl font-medium tabular-nums tracking-tight",
+                    "text-foreground",
+                    isHoliday && "text-destructive",
+                    isToday && [
+                      "h-9 w-9 sm:h-10 sm:w-10 rounded-md",
+                      "bg-foreground text-background font-semibold",
+                      "shadow-[0_1px_0_0_hsl(var(--foreground)/0.18),inset_0_1px_0_0_hsl(0_0%_100%/0.12)]",
+                    ]
+                  )}
+                >
+                  {isNepaliLanguage
+                    ? day.calendarInfo.dates.bs.day.np
+                    : day.calendarInfo.dates.bs.day.en}
+                </span>
+              </div>
+
+              {/* Bottom: events / dots */}
+              <div className="mt-auto flex flex-col items-center gap-0.5">
+                {eventsCount > 0 && (
+                  <div className="flex items-center justify-center gap-1">
+                    {singleDayUserEvents
+                      .slice(0, Math.min(eventsCount, 3))
+                      .map((color, i) => (
+                        <span
+                          key={i}
+                          style={{
+                            backgroundColor: color ? colors[color] : undefined,
+                          }}
+                          className={cn(
+                            "inline-block h-1.5 w-1.5 rounded-full",
+                            !color && "bg-muted-foreground/60"
+                          )}
+                        />
+                      ))}
+                    {eventsCount > 3 && (
+                      <span className="text-[9px] leading-none text-muted-foreground font-mono">
+                        +
+                        {isNepaliLanguage
+                          ? nepaliNumber((+eventsCount - 3).toString())
+                          : +eventsCount - 3}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {hasEvent && (
+                  <p
                     className={cn(
-                      "text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5",
+                      "hidden sm:block w-full truncate text-center text-[10px] leading-tight",
                       isHoliday
-                        ? "text-red-700 dark:text-red-400"
-                        : "text-gray-600 dark:text-gray-300"
+                        ? "text-destructive/80"
+                        : "text-muted-foreground"
                     )}
                   >
                     {isNepaliLanguage
-                      ? day.calendarInfo.dates.ad.day.np
-                      : day.calendarInfo.dates.ad.day.en}
-                  </span>
-
-                  <span className="text-[10px] sm:text-xs text-gray-500 hidden md:block truncate max-w-[60%]">
-                    {day.tithiDetails?.title.np}
-                  </span>
-                </div>
-
-                <div className="flex justify-center items-center md:my-2">
-                  <span
-                    className={cn(
-                      "flex items-center justify-center rounded-full w-8 h-8 sm:w-10 sm:h-10 text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300",
-                      isHoliday && "text-red-600 dark:text-red-400",
-                      isToday &&
-                        "text-indigo-700 dark:text-indigo-400 font-bold",
-                      isToday &&
-                        isHoliday &&
-                        "bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-400"
-                    )}
-                  >
-                    {isNepaliLanguage
-                      ? day.calendarInfo.dates.bs.day.np
-                      : day.calendarInfo.dates.bs.day.en}
-                  </span>
-                </div>
-
-                <div className="mt-auto">
-                  {eventsCount > 0 && (
-                    <div className="flex justify-center items-center gap-1 mt-1">
-                      {singleDayUserEvents
-                        .splice(0, Math.min(eventsCount, 2))
-                        .map((color, i) => (
-                          <span
-                            key={i}
-                            style={{
-                              backgroundColor: color
-                                ? colors[color]
-                                : "#475569",
-                            }}
-                            className="inline-block size-2 rounded-full dark:opacity-90"
-                          ></span>
-                        ))}
-                      {eventsCount > 2 && (
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400">
-                          +
-                          {isNepaliLanguage
-                            ? nepaliNumber((+eventsCount - 2).toString())
-                            : +eventsCount - 2}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {day.eventDetails.length > 0 && (
-                    <p className="text-[10px] mt-1 sm:text-xs text-center hidden sm:block truncate text-indigo-700 dark:text-indigo-400">
-                      {isNepaliLanguage
-                        ? day.eventDetails[0]?.title.np
-                        : day.eventDetails[0]?.title.en}
-                    </p>
-                  )}
-                </div>
-                <p className="md:hidden text-[10px] text-gray-500 dark:text-gray-400 truncate">
+                      ? day.eventDetails[0]?.title.np
+                      : day.eventDetails[0]?.title.en}
+                  </p>
+                )}
+                <p className="md:hidden w-full truncate text-center text-[9px] leading-none text-muted-foreground">
                   {day.tithiDetails?.title.np}
                 </p>
               </div>

@@ -8,35 +8,52 @@ const UpcomingEvent: React.FC<{
   isHoliday?: boolean
 }> = ({ event, isHoliday }) => {
   return (
-    <div className="flex items-center space-x-4 border dark:border-gray-700 rounded-lg p-2">
+    <div
+      className={cn(
+        "group flex items-center gap-3 rounded-md border border-border bg-card p-2.5",
+        "transition-colors duration-150 hover:border-foreground/30 hover:bg-accent/40"
+      )}
+    >
+      {/* Keycap-styled date */}
       <div
         className={cn(
-          "rounded-lg text-center w-12 h-12 flex-row items-center justify-center",
-          isHoliday
-            ? "text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30"
-            : "text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-800"
+          "kbd-surface flex h-12 w-12 flex-shrink-0 flex-col items-center justify-center rounded-md",
+          isHoliday && "bg-destructive/10 border-destructive/30"
         )}
       >
-        <p className="text-lg font-semibold">{event.date}</p>
-        <p className="text-xs font-semibold">{event.day}</p>
+        <span
+          className={cn(
+            "text-base font-semibold leading-none tabular-nums",
+            isHoliday ? "text-destructive" : "text-foreground"
+          )}
+        >
+          {event.date}
+        </span>
+        <span
+          className={cn(
+            "text-[9px] mt-1 uppercase tracking-tight font-mono leading-none",
+            isHoliday ? "text-destructive/80" : "text-muted-foreground"
+          )}
+        >
+          {event.day}
+        </span>
       </div>
-      <div className="flex-1">
-        <span className="flex flex-row items-start">
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-2">
           <p
             className={cn(
-              "font-bold text-left w-10 flex-1 text-ellipsis",
-              isHoliday
-                ? "text-red-500 dark:text-red-400"
-                : "text-gray-700 dark:text-gray-300"
+              "text-sm font-medium tracking-tight truncate",
+              isHoliday ? "text-destructive" : "text-foreground"
             )}
           >
             {event.title}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center px-1.5 py-1 rounded-xl bg-gray-100 dark:bg-gray-800">
+          <span className="kbd-surface flex-shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-tight text-muted-foreground">
             {relativeTimeFromDates(new Date(event.enDate))}
-          </p>
-        </span>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+          </span>
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground truncate">
           {event.fullDate}
         </p>
       </div>
